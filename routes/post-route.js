@@ -37,7 +37,7 @@ export async function handleProfilesRoute(pathSegments, url, request, response) 
                 'breadText': params.get('breadText')
             });
 
-            response.writeHead(303, { 'Location': '/showcasepost/' + result.insertedId });
+            response.writeHead(303, { 'Location': '/create-page/' + result.insertedId });
 
 
             response.end();
@@ -47,11 +47,11 @@ export async function handleProfilesRoute(pathSegments, url, request, response) 
             let filter = {};
 
             if (url.searchParams.has('title')) {
-                filter.age = url.searchParams.get('title');
+                filter.title = url.searchParams.get('title');
             }
 
             if (url.searchParams.has('breadText')) {
-                filter.name = url.searchParams.get('breadText');
+                filter.breadText = url.searchParams.get('breadText');
             }
 
             let documents = await dbo.collection('Posts').find(filter).toArray();
@@ -59,16 +59,55 @@ export async function handleProfilesRoute(pathSegments, url, request, response) 
             let profileString = '';
 
             for (let i = 0; i < documents.length; i++) {
-                profileString += '<li><a href="/profile/' + cleanupHTMLOutput(documents[i]._id.toString()) + '">' + cleanupHTMLOutput(documents[i].teamName) + ' (' + cleanupHTMLOutput(documents[i].phoneNumber) + ')</a></li>';
+                profileString += '<li><a href="/profile/' + cleanupHTMLOutput(documents[i]._id.toString()) + '">' + cleanupHTMLOutput(documents[i].userName) + ' (' + cleanupHTMLOutput(documents[i].title) + ')</a></li>';
             }
-            let template = (await fs.readFile('templates/profiles-list.volvo')).toString();
+            let template = (await fs.readFile('templates/startpage.blogg')).toString();
 
-            template = template.replaceAll('%{profilesList}%', profileString);
+            template = template.replaceAll('%{postList}%', profileString);
 
             response.writeHead(200, { 'Content-Type': 'text/html; charset=UTF-8' });
             response.write(template);
             response.end();
             return;
         }
+        response.writeHead(405, { 'Content-Type': 'text/plain' });
+        response.write('405 Method Not Allowed');
+        response.end();
+        return;
     }
+    if (request.method !== 'GET') {
+        response.writeHead(405, { 'Content-Type': 'text/plain' });
+        response.write('405 Method Not Allowed');
+        response.end();
+        return;
+    }
+    let profileDocument;
+    try {
+        profileDocument = await dbo.collection('Posts').findOne({
+            "_id": new ObjectId(nextSegment)
+        });
+    } catch (e) {
+        response.writeHead(404, { 'Content-Type': 'text/plain' });
+        response.write('404 Not Found');
+        return;
+    }
+
+    if (!profileDocument) {
+        response.writeHead(404, { 'Content-Type': 'text/plain' });
+        response.write('404 Not Found');
+        response.end();
+        return;
+    }
+
+    let template = (await fs.readFile('templates/showcase-post')).toString();
+    template = template.replaceAll('%{userName}%', cleanupHTMLOutput(profileDocument.userName));
+    template = template.replaceAll('%{title}%', cleanupHTMLOutput(profileDocument.title));
+    template = template.replaceAll('%{breadText}%', cleanupHTMLOutput(profileDocument.breadText));
+
+    response.writeHead(200, { 'Content-Type': 'text/html;charset=UTF-8' });
+    response.write(template);
+    response.end();
+    return;
+
+
 }

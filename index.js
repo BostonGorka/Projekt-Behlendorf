@@ -3,7 +3,7 @@ import http from 'http';
 import { MongoClient } from 'mongodb';
 import { getRequestBody } from './utilities.js';
 import fs from 'fs/promises';
-import { handleProfilesRoute } from './routes/post-route,js';
+import { handleProfilesRoute } from './routes/post-route.js';
 
 
 let dbConn = await MongoClient.connect(process.env.MONGODB_CONNECTION_STRING);
@@ -39,14 +39,14 @@ async function handleRequest(request, response) {
         return;
     }
 
-    if (nextSegment === 'managepost') {
+    if (nextSegment === 'createpost') {
         if (request.method !== 'POST') {
             response.writeHead(405, { 'Content-Type': 'text/plain' });
             response.write('405 Method Not Allowed');
             response.end();
             return;
         }
-        let template = (await fs.readFile('templates/managepost.blogg')).toString();
+        let template = (await fs.readFile('templates/create-post.blogg')).toString();
 
         response.writeHead(200, { 'Content-Type': 'text/html;charset=UTF-8' });
         response.write(template);
@@ -69,7 +69,7 @@ async function handleRequest(request, response) {
         response.end();
         return;
     }
-    if (nextSegment === 'createpost') {
+    if (nextSegment === 'managepost') {
         if (request.method !== 'POST') {
             response.writeHead(405, { 'Content-Type': 'text/plain' });
             response.write('405 Method Not Allowed');
