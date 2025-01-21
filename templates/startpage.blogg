@@ -7,7 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Startsida</h1>
+    <h1>Kanelbloggen</h1>
     <h2>Inlägg</h2>
     <li>%{postList}%</li>
     <button type="submit">Skapa inlägg</button>

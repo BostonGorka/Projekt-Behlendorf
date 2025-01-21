@@ -7,11 +7,12 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="/create-post.blogg" method="POST">
+    <form action="/showcasepost" method="POST">
 		<input type="text" name="userName" placeholder="Användarnamn" required>
 		<input type="text" name="title" placeholder="Titel" required>
 		<input type="text" name="breadText" placeholder="Brödtext" required>
 		<button type="submit">Skapa inlägg</button>
+        <buttont type="submit">Tillbaka</button>
 	</form>
 </body>
 </html>

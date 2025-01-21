@@ -37,7 +37,7 @@ export async function handleProfilesRoute(pathSegments, url, request, response) 
                 'breadText': params.get('breadText')
             });
 
-            response.writeHead(303, { 'Location': '/create-page/' + result.insertedId });
+            response.writeHead(303, { 'Location': '/showcasepost/' + result.insertedId });
 
 
             response.end();
@@ -45,25 +45,6 @@ export async function handleProfilesRoute(pathSegments, url, request, response) 
         }
         if (request.method === 'GET') {
             let filter = {};
-
-            if (url.searchParams.has('title')) {
-                filter.title = url.searchParams.get('title');
-            }
-
-            if (url.searchParams.has('breadText')) {
-                filter.breadText = url.searchParams.get('breadText');
-            }
-
-            let documents = await dbo.collection('Posts').find(filter).toArray();
-
-            let profileString = '';
-
-            for (let i = 0; i < documents.length; i++) {
-                profileString += '<li><a href="/profile/' + cleanupHTMLOutput(documents[i]._id.toString()) + '">' + cleanupHTMLOutput(documents[i].userName) + ' (' + cleanupHTMLOutput(documents[i].title) + ')</a></li>';
-            }
-            let template = (await fs.readFile('templates/startpage.blogg')).toString();
-
-            template = template.replaceAll('%{postList}%', profileString);
 
             response.writeHead(200, { 'Content-Type': 'text/html; charset=UTF-8' });
             response.write(template);
@@ -99,7 +80,7 @@ export async function handleProfilesRoute(pathSegments, url, request, response) 
         return;
     }
 
-    let template = (await fs.readFile('templates/showcase-post')).toString();
+    let template = (await fs.readFile('templates/showcase-post.blogg')).toString();
     template = template.replaceAll('%{userName}%', cleanupHTMLOutput(profileDocument.userName));
     template = template.replaceAll('%{title}%', cleanupHTMLOutput(profileDocument.title));
     template = template.replaceAll('%{breadText}%', cleanupHTMLOutput(profileDocument.breadText));
