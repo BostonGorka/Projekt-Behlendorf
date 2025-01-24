@@ -10,8 +10,10 @@
     <h2>%{userName}% s inlägg</h2>
     <h3>%{title}%</h3>
     <p>%{breadText}%</p>
+    <a href="/managepost/%{_id}%"><button type="submit">Hantera inlägg</button></a>
     <a href="/startpage"><button type="submit">Tillbaka</button></a>
-    <a href="/managepost"><button type="submit">Hantera inlägg</button></a>
+
+    
     
 </body>
 </html>

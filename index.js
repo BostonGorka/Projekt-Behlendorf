@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import http from 'http';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { getRequestBody, cleanupHTMLOutput } from './utilities.js';
 import fs from 'fs/promises';
 import { handleProfilesRoute } from './routes/post-route.js';
@@ -73,11 +73,38 @@ async function handleRequest(request, response) {
     }
     if (nextSegment === 'managepost') {
         if (request.method === 'GET') {
+            console.log("wallahi");
+            let nextNextSegment = pathSegments.shift();
             let template = (await fs.readFile('templates/managepost.blogg')).toString();
-           //
+            let profileDocument;
+            try {
+                profileDocument = await dbo.collection('Posts').findOne({
+                    "_id": new ObjectId(nextNextSegment)
+                });
+                console.log("wallahi2");
+            } catch (e) {
+                
+                response.writeHead(404, { 'Content-Type': 'text/plain' });
+                response.write('404 Not Found');
+                response.end();
+                return;
+            }
+
+
+
+            
+        
+            if (!profileDocument) {
+                response.writeHead(404, { 'Content-Type': 'text/plain' });
+                response.write('404 Not Found');
+                response.end();
+                return;
+            }
             template = template.replaceAll('%{userName}%', cleanupHTMLOutput(profileDocument.userName));
             template = template.replaceAll('%{title}%', cleanupHTMLOutput(profileDocument.title));
             template = template.replaceAll('%{breadText}%', cleanupHTMLOutput(profileDocument.breadText));
+            template = template.replaceAll('%{_id}%', cleanupHTMLOutput(profileDocument._id.toString()));
+
 
 
             response.writeHead(200, { 'Content-Type': 'text/html;charset=UTF-8' });
@@ -95,6 +122,8 @@ async function handleRequest(request, response) {
             return;
 
         }
+
+       
 
 
     }
