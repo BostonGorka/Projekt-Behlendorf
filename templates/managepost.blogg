@@ -6,36 +6,66 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet " href="/static/style.css">
 </head>
 
 <body>
-    <input type="text" name="userName" placeholder="Användarnamn" required value="%{userName}%">
-    <input type="text" name="title" placeholder="Titel" required value="%{title}%">
-    <input type="text" name="breadText" placeholder="Brödtext" required value="%{breadText}%">
-    <button onclick="sendDeleteRequest()">Radera inlägg</button>
-    <button type="submit">Redigera inlägg</button>
+    <h1>%{userName}% 's inlägg</h1>
+    <form onsubmit="sendPutRequest(event)">
+        <input type="text" name="title" placeholder="Titel" required value="%{title}%">
+        <input type="text" name="breadText" placeholder="Brödtext" required value="%{breadText}%">
+        <button onclick="sendDeleteRequest(event)">Radera inlägg</button>
+        <button type="submit">Redigera inlägg</button>
+        
+    </form>
     <a href="/startpage"><button type="submit">Tillbaka</button></a>
+    
 
 
     <script>
-		function sendDeleteRequest(){
-           let request = new XMLHttpRequest();
 
-		   request.onload = function(){
-              if(request.status === 204){
-				  alert("Inlägget har raderats");
-				  window.location = '/startpage';
-			  }else{
-                  alert("kunde inte radera profilen");
-			  }
+        function sendDeleteRequest(e) {
+            e.preventDefault();
+            let request = new XMLHttpRequest();
 
-		   };
+            request.onload = function () {
+                if (request.status === 204) {
+                    alert("Inlägget har raderats");
+                    window.location = '/startpage';
+                } else {
+                    alert("kunde inte radera inlägget");
+                }
 
-		   request.open('DELETE', '/showcasepost/%{_id}%');
+            };
 
-		   request.send();
-		}
-	</script>
+            request.open('DELETE', '/showcasepost/%{_id}%');
+
+            request.send();
+        }
+
+        function sendPutRequest(e) {
+            e.preventDefault();
+            let request = new XMLHttpRequest();
+
+            request.onload = function () {
+                if (request.status === 204) {
+                    alert("Inlägget har redigerats");
+                    window.location = '/startpage';
+                } else {
+                    alert("Kunde inte redigera inlägget");
+                }
+            };
+
+            request.open('PUT', '/showcasepost/%{_id}%');
+            request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            let formData = new FormData(e.target);
+            let asQueryString = new URLSearchParams(formData).toString();
+            request.send(asQueryString);
+        }
+    </script>
+
+
 </body>
 
 </html>

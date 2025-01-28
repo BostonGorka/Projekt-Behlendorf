@@ -19,7 +19,6 @@ export function getRequestBody(request) {
 }
 
 export function cleanupHTMLOutput(input){
-	console.log(input)
 	input = input.replaceAll('&', '@amp;');
 	input = input.replaceAll('<', '&lt;');
 	input = input.replaceAll('>', '&gt;');

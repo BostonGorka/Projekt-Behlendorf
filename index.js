@@ -2,6 +2,7 @@ import 'dotenv/config';
 import http from 'http';
 import { MongoClient, ObjectId } from 'mongodb';
 import { getRequestBody, cleanupHTMLOutput } from './utilities.js';
+import { handleStaticFileRequest } from './static-file-handler.js';
 import fs from 'fs/promises';
 import { handleProfilesRoute } from './routes/post-route.js';
 
@@ -24,6 +25,11 @@ async function handleRequest(request, response) {
 
     let nextSegment = pathSegments.shift();
 
+    if (nextSegment === 'static') {
+        await handleStaticFileRequest(pathSegments, request, response);
+        return;
+    }
+
     if (nextSegment === 'startpage') {
         if (request.method !== 'GET') {
             response.writeHead(405, { 'Content-Type': 'text/plain' });
@@ -38,7 +44,7 @@ async function handleRequest(request, response) {
 
 
         for (let i = 0; i < documents.length; i++) {
-            profileString += '<li><a href="/showcasepost/' + cleanupHTMLOutput(documents[i]._id.toString()) + '">' + cleanupHTMLOutput(documents[i].title) + ')</a></li>';
+            profileString += '<li><a href="/showcasepost/' + cleanupHTMLOutput(documents[i]._id.toString()) + '">' + cleanupHTMLOutput(documents[i].title) + '(' +cleanupHTMLOutput(documents[i].userName) + ')' + '</a></li>';
         }
         let template = (await fs.readFile('templates/startpage.blogg')).toString();
 
@@ -73,7 +79,7 @@ async function handleRequest(request, response) {
     }
     if (nextSegment === 'managepost') {
         if (request.method === 'GET') {
-            console.log("wallahi");
+          
             let nextNextSegment = pathSegments.shift();
             let template = (await fs.readFile('templates/managepost.blogg')).toString();
             let profileDocument;
@@ -81,7 +87,7 @@ async function handleRequest(request, response) {
                 profileDocument = await dbo.collection('Posts').findOne({
                     "_id": new ObjectId(nextNextSegment)
                 });
-                console.log("wallahi2");
+                
             } catch (e) {
                 
                 response.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -122,6 +128,8 @@ async function handleRequest(request, response) {
             return;
 
         }
+
+       
 
        
 

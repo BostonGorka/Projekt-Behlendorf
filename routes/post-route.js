@@ -19,7 +19,7 @@ export async function handleProfilesRoute(pathSegments, url, request, response) 
             let body = await getRequestBody(request);
 
             let params = new URLSearchParams(body);
-            console.log(params)
+           
 
             if (!params.get('userName') || !params.get('title')
                 || !params.get('breadText')) {
@@ -79,6 +79,34 @@ export async function handleProfilesRoute(pathSegments, url, request, response) 
 
     }
 
+    if(request.method === 'PUT'){
+        let body = await getRequestBody(request);
+
+			let params = new URLSearchParams(body);
+
+			if (!params.get('breadText') || !params.get('title')) {
+
+
+				response.writeHead(400, { 'Content-Type': 'text/plain' });
+				response.write('400 Bad Request');
+				response.end();
+				return;
+			}
+			await dbo.collection('Posts').updateOne({
+				"_id": new ObjectId(nextSegment)
+			}, {
+				'$set': {
+					'breadText': params.get('breadText'),
+					'title': params.get('title')
+
+				}
+			});
+			response.writeHead(204);
+			response.end();
+			return;
+		
+    }
+
 
 
     if(request.method === "GET"){
@@ -110,10 +138,5 @@ export async function handleProfilesRoute(pathSegments, url, request, response) 
         response.end();
         return;
     }
-
-   
-
     
-
-
 }
