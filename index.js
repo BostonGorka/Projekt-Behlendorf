@@ -44,6 +44,7 @@ async function handleRequest(request, response) {
 
 
         for (let i = 0; i < documents.length; i++) {
+            
             profileString += '<li><a href="/showcasepost/' + cleanupHTMLOutput(documents[i]._id.toString()) + '">' + cleanupHTMLOutput(documents[i].title) + '(' +cleanupHTMLOutput(documents[i].userName) + ')' + '</a></li>';
         }
         let template = (await fs.readFile('templates/startpage.blogg')).toString();
